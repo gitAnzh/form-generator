@@ -25,7 +25,7 @@ class FormActions:
 
     def create_form(self):
         with MongoConnection() as users_collection:
-                a = 1
+                a = 12
 
     @staticmethod
     def add_image_to_form(username, docs):
