@@ -14,7 +14,7 @@ setup(
     author='evolveZenith',
     author_email='mohsen.u3fi@hotmail.com',
     load_description=open('README.md').read(),
-    packages=["source"],
+    packages=["routers"],
     install_requires=requirements,
     zip_safe=False
 )

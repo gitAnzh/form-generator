@@ -21,7 +21,7 @@ class contract_duration(str, Enum):
     month_12 = "12 month"
 
 
-class Forms(BaseModel):
+class FormsValidator(BaseModel):
     sortType: Optional[contract_type] = Field(
         title="Contract Type",
         alias="contractType",
@@ -163,20 +163,24 @@ class Forms(BaseModel):
         dataType="str",
         isRquired=True
     )
-
-class UserLogin(BaseValidator):
-    password: str = Field(
-        ...,
-        alias="password",
-        name="password",
-        isRquired=True,
-
+    official_use_aotnrrit: Optional[str] = Field(
+        title="second official use item",
+        alias="officialUseAotnrrit",
+        description="approval of the new registration reequest isprovided that",
+        dataType="str",
+        isRquired=False
     )
-    username: str = Field(
-        ...,
-        alias="username",
-        name="username",
-        dataType="text",
-        regexPatternPattern=r"^[a-zA-Z0-9_]{3,32}$",
-        isRquired=True,
+    official_use_tawnaftfr: Optional[str] = Field(
+        title="third official use item",
+        alias="officialUseTawnaftfr",
+        description="the application was not approved for the following reasons",
+        dataType="str",
+        isRquired=False
+    )
+    special_sservises: Optional[list] = Field(
+        title="special servises",
+        alias="specialServises",
+        description="pricing for special services",
+        dataType="list",
+        isRquired=False
     )

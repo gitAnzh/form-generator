@@ -5,7 +5,8 @@ from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
 from config import settings
-from routers.users.app import appd as order_app
+from routers.users.app import appd as user_app
+from routers.forms.app import app as form_data
 #
 app = FastAPI(title="Portal Api Gateway",
               version="0.0.1",
@@ -15,7 +16,8 @@ app = FastAPI(title="Portal Api Gateway",
 # --------------------------------------------- Mount Services Here ------------------------------------------------- #
 
 
-app.mount(path="/users/api/v1", app=order_app)
+app.mount(path="/users/api/v1", app=user_app)
+app.mount(path="/form/api/v1", app=form_data)
 app.mount("/gallery_files/", StaticFiles(directory="static_files"), name="gallery_files")
 
 
