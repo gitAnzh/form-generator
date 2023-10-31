@@ -1,9 +1,3 @@
-import os
-
-import filetype
-from fastapi import HTTPException
-from passlib.context import CryptContext
-
 from routers.database.mongo_connection import MongoConnection
 from routers.users.models.user_model import Images
 
@@ -25,7 +19,7 @@ class FormActions:
 
     def create_form(self):
         with MongoConnection() as users_collection:
-                a = 12
+            a = 12
 
     @staticmethod
     def add_image_to_form(username, docs):
@@ -34,4 +28,3 @@ class FormActions:
         with MongoConnection() as client:
             client.users.update_one({"username": username}, {"$set": {"avatar": url}})
             return {"message": "User registered successfully"}
-
