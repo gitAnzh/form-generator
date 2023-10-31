@@ -1,6 +1,6 @@
 import pymongo
 
-from config import settings
+from routers.config import settings
 
 
 class MongoConnection:
