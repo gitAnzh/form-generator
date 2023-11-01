@@ -46,6 +46,11 @@ def user_avatar(username: str, docs: bytes = File(...)):
 def get_user(username: str):
     return UserActions.get_user(username)
 
+
+@user_router.get("/main_page", tags=["Main Page"])
+def main_page():
+    return UserActions.main_page_detail()
+
 #
 # @user_router.post("/user_final", tags=["Users"])
 # def user_final(refferal_number: str, docs1: bytes = File(...), docs2: bytes = File(...), docs3: bytes = File(...),

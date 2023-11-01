@@ -61,6 +61,11 @@ class UserActions:
         with MongoConnection() as client:
             return client.users.find_one({"username": username}, {"_id": 0, "password": 0})
 
+    @staticmethod
+    def main_page_detail():
+        with MongoConnection() as client:
+            return client.users.find_one({}, {"_id": 0, "password": 0})
+
 
 class Images:
     @staticmethod
