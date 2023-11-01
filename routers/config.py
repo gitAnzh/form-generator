@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     MONGO_PORT: int = int(os.getenv("MONGO_PORT"))
     MONGO_USER: str = os.getenv("MONGO_USER")
     MONGO_PASS: str = os.getenv("MONGO_PASS")
+    MONGO_CONTAINERNAME: str = os.getenv("CONTAINERNAME")
 
     # Uvicorn
     UVICORN_HOST: str = os.getenv("UVICORN_HOST")

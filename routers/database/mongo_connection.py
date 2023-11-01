@@ -7,7 +7,7 @@ class MongoConnection:
     client = None
 
     def __init__(self):
-        self.client = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT,
+        self.client = MongoClient(settings.CONTAINERNAME,
                                   username=settings.MONGO_USER,
                                   password=settings.MONGO_PASS) if not self.client else self.client
         self.db = self.client['form-generator']
