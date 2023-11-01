@@ -199,7 +199,7 @@ class OfficialUse(BaseModel):
 
 
 class FormsValidator(BaseModel):
-    companyID: Optional[str] = Field(
+    companyID: Optional[int] = Field(
         title="company id",
         alias="companyID",
         dataType="str",
