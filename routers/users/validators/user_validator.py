@@ -12,7 +12,7 @@ class Users(BaseModel):
     company_name: str
     address: str
     phone_number: str
-    email: str
+    email: EmailStr
 
 class UserLogin(BaseValidator):
     password: str = Field(
