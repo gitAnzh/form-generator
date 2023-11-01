@@ -199,6 +199,12 @@ class OfficialUse(BaseModel):
 
 
 class FormsValidator(BaseModel):
+    companyID: Optional[str] = Field(
+        title="company id",
+        alias="companyID",
+        dataType="str",
+        isRquired=True,
+    )
     PersonalInformation: Optional[PersonalInformation]
     educationalInformation: Optional[EducationInformation]
     RegistrationData: Optional[RegistrationData]

@@ -20,9 +20,33 @@ class FormActions:
     def create_form(self):
         with MongoConnection() as client:
             self.data['referralNumber'] = self.id_counter("forms")
+            self.data['confirmed'] = False
             client.forms.insert_one(self.data)
             return {"success": True, "message": "Form registered successfully",
                     "referralNumber": self.data['referralNumber']}
+
+    @staticmethod
+    def confirm_form(referral):
+        with MongoConnection() as client:
+            form = client.forms.update_one({"referralNumber": referral}, {"$set": {"confirmed": True}})
+            if form.modified_count:
+                return {"success": True, "message": "Form confirmed successfully"}
+            return {"success": True, "message": "something went wrong!"}
+
+    @staticmethod
+    def get_forms(company_id):
+        with MongoConnection() as client:
+            return {"success": True, "message": list(client.forms.aggregate(
+                [
+                    {
+                        '$match': {
+                            'companyID': int(company_id)
+                        }
+                    }, {
+                    '$project': {
+                        '_id': 0
+                    }
+                }]))}
 
     @staticmethod
     def add_image_to_form(username, docs):

@@ -12,3 +12,13 @@ auth_handler = AuthHandler()
 def create_form(data: FormsValidator):
     a = FormActions(data.dict())
     return a.create_form()
+
+
+@forms_router.put("/confirm_form", tags=["Forms"])
+def confirm_form(referralNumber: int):
+    return FormActions.confirm_form(referralNumber)
+
+
+@forms_router.get("/get_forms", tags=["Forms"])
+def confirm_form(companyId: int):
+    return FormActions.get_forms(companyId)
