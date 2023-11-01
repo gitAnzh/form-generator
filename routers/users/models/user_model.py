@@ -56,6 +56,11 @@ class UserActions:
             client.users.update_one({"username": username}, {"$set": {"avatar": url}})
             return {"message": "User registered successfully"}
 
+    @staticmethod
+    def get_user(username):
+        with MongoConnection() as client:
+            return client.users.find_one({"username": username}, {"_id": 0, "password": 0})
+
 
 class Images:
     @staticmethod
