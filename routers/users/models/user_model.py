@@ -64,8 +64,15 @@ class UserActions:
     @staticmethod
     def main_page_detail():
         with MongoConnection() as client:
-            return client.users.find_one({}, {"_id": 0, "password": 0})
-
+            return list(client.users.aggregate([
+                {
+                    '$project': {
+                        'company_name': 1,
+                        'avatar': 1,
+                        '_id': 0
+                    }
+                }
+            ]))
 
 class Images:
     @staticmethod
