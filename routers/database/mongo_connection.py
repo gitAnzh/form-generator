@@ -10,7 +10,7 @@ class MongoConnection:
         self.client = pymongo.MongoClient(settings.MONGO_HOST, settings.MONGO_PORT,
                                           username=settings.MONGO_USER,
                                           password=settings.MONGO_PASS) if not self.client else self.client
-        self.db = self.client['esi']
+        self.db = self.client['form-generator']
         self.users = self.db["users"]
         self.id = self.db["id_counter"]
 
