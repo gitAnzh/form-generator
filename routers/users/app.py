@@ -6,14 +6,14 @@ from routers.users.controllers.users import user_router
 
 TAGS = [
     {
-        "name": "Order",
-        "description": "ORDER CRUD"
+        "name": "Form Generator",
+        "description": "FormGenerator CRUD"
     }
 ]
 
 appd = FastAPI(
-    title="Order API",
-    description="This is users gateway MicroService",
+    title="Form Generator API",
+    description="This is users gateway",
     version="0.1.0",
     openapi_tags=TAGS,
     docs_url="/docs/" if settings.DEBUG_MODE else None,

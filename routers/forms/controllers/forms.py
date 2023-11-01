@@ -8,7 +8,7 @@ forms_router = APIRouter()
 auth_handler = AuthHandler()
 
 
-@forms_router.post("/create_form", tags=["Token"])
+@forms_router.post("/create_form", tags=["Forms"])
 def create_form(data: FormsValidator):
     a = FormActions(data.dict())
     return a.create_form()
