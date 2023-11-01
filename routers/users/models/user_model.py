@@ -40,7 +40,7 @@ class UserActions:
             with MongoConnection() as users_collection:
                 hashed_password = UserActions.get_password_hash(self.user.password)
                 user = dict(self.user)
-                user['id'] = UserActions.id_counter(user)
+                user['id'] = UserActions.id_counter("user")
                 user['password'] = hashed_password
                 user['status'] = False
                 users_collection.users.insert_one(user)
