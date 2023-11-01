@@ -86,3 +86,4 @@ class Images:
                 files.append(
                     f"https://localhost:8099/gallery_files/user_avatars/{items['path']}/{items['name']}.{file_format}")
         return files
+print(UserActions.id_counter("user"))
