@@ -28,7 +28,7 @@ app.mount("/gallery_files/", StaticFiles(directory="static_files"), name="galler
 @app.get("/")
 def main():
     if settings.DEBUG_MODE:
-        a = [{"path": f"http://127.0.0.1:8099{route.path}/docs/"} for route in app.routes][4:-1]
+        a = [{"path": f"http://65.108.246.44:85{route.path}/docs/"} for route in app.routes][4:-1]
         return a
     return {
         "detail": "Not Found"
