@@ -8,3 +8,4 @@ urllib3==1.26.9
 passlib==1.7.4
 pymongo~=4.0.1
 jdatetime
+email-validator
