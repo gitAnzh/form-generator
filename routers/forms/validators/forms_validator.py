@@ -21,7 +21,7 @@ class contract_duration(str, Enum):
     month_12 = "12 month"
 
 
-class FormsValidator(BaseModel):
+class PersonalInformation(BaseModel):
     sortType: Optional[contract_type] = Field(
         title="Contract Type",
         alias="contractType",
@@ -58,6 +58,8 @@ class FormsValidator(BaseModel):
         isRquired=True
     )
 
+
+class EducationInformation(BaseModel):
     educationDegree: Optional[str] = Field(
         title="highest academic degree",
         alias="educationDegree",
@@ -72,48 +74,57 @@ class FormsValidator(BaseModel):
         dataType="str",
         isRquired=True
     )
+
+
+class Experiences(BaseModel):
     exprience1: Optional[str] = Field(
         title="exprience",
-        alias="exprience",
+        alias="exprience1",
         description="experience detail of user",
         dataType="str",
         isRquired=True
     )
     exprience1Year: Optional[str] = Field(
         title="exprience year",
-        alias="exprienceYear",
+        alias="exprience1Year",
         description="experience year detail of user",
         dataType="str",
         isRquired=True
     )
     exprience2: Optional[str] = Field(
         title="exprience",
-        alias="exprience",
+        alias="exprience2",
         description="university of user",
         dataType="str",
         isRquired=False
     )
     exprience2Year: Optional[str] = Field(
         title="exprience year",
-        alias="exprienceYear",
+        alias="exprience2Year",
         description="experience year detail of user",
         dataType="str",
-        isRquired=False
+        isRquired=False,
+        default=None
     )
     exprience3: Optional[str] = Field(
         title="exprience",
-        alias="exprience",
+        alias="exprience3",
         description="university of user",
         dataType="str",
-        isRquired=False
+        isRquired=False,
+        default=None
     )
     exprience3Year: Optional[str] = Field(
         title="exprience year",
-        alias="exprienceYear",
+        alias="exprience3Year",
         description="experience year detail of user",
         dataType="str",
-        isRquired=False
+        isRquired=False,
+        default=None
     )
+
+
+class RegistrationData(BaseModel):
     registration_period: Optional[contract_duration] = Field(
         title="registration period",
         alias="registration_period",
@@ -123,64 +134,79 @@ class FormsValidator(BaseModel):
     )
     activities_propose1: Optional[str] = Field(
         title="activities propose",
-        alias="activitiesPropose",
+        alias="activitiesPropose1",
         description="activities perpose 1",
         dataType="str",
         isRquired=True
     )
     activities_propose2: Optional[str] = Field(
         title="activities propose",
-        alias="activitiesPropose",
+        alias="activitiesPropose2",
         description="activities perpose 1",
         dataType="str",
-        isRquired=False
+        isRquired=False,
+        default=None
     )
     activities_propose3: Optional[str] = Field(
         title="activities propose",
-        alias="activitiesPropose",
+        alias="activitiesPropose3",
         description="activities perpose 1",
         dataType="str",
-        isRquired=False
+        isRquired=False,
+        default=None
     )
     special_condition1: Optional[str] = Field(
         title="special condition from client",
-        alias="specialCondition",
+        alias="specialCondition1",
         description="special condition from client",
         dataType="str",
-        isRquired=True
+        isRquired=True,
+        default=None
     )
     special_condition2: Optional[str] = Field(
         title="special condition from client",
-        alias="specialCondition",
+        alias="specialCondition2",
         description="special condition from client",
         dataType="str",
         isRquired=True
     )
     special_condition3: Optional[str] = Field(
         title="special condition from client",
-        alias="specialCondition",
+        alias="specialCondition3",
         description="special condition from client",
         dataType="str",
         isRquired=True
     )
+
+
+class OfficialUse(BaseModel):
     official_use_aotnrrit: Optional[str] = Field(
         title="second official use item",
         alias="officialUseAotnrrit",
         description="approval of the new registration reequest isprovided that",
         dataType="str",
-        isRquired=False
+        isRquired=False,
+        default=None
     )
     official_use_tawnaftfr: Optional[str] = Field(
         title="third official use item",
         alias="officialUseTawnaftfr",
         description="the application was not approved for the following reasons",
         dataType="str",
-        isRquired=False
+        isRquired=False,
+        default=None
     )
-    special_sservises: Optional[list] = Field(
+
+
+class FormsValidator(BaseModel):
+    PersonalInformation: Optional[PersonalInformation]
+    educationalInformation: Optional[EducationInformation]
+    RegistrationData: Optional[RegistrationData]
+    OfficialUse: Optional[OfficialUse]
+    special_servises: Optional[list] = Field(
         title="special servises",
         alias="specialServises",
         description="pricing for special services",
-        dataType="list",
-        isRquired=False
+        dataType="dict",
+        isRquired=True,
     )

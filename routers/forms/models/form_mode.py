@@ -18,8 +18,11 @@ class FormActions:
                 return 1
 
     def create_form(self):
-        with MongoConnection() as users_collection:
-            a = 12
+        with MongoConnection() as client:
+            self.data['referralNumber'] = self.id_counter("forms")
+            client.forms.insert_one(self.data)
+            return {"success": True, "message": "Form registered successfully",
+                    "referralNumber": self.data['referralNumber']}
 
     @staticmethod
     def add_image_to_form(username, docs):
