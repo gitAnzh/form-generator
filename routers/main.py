@@ -28,7 +28,7 @@ app.mount("/gallery_files/", StaticFiles(directory="static_files"), name="galler
 @app.get("/")
 def main():
     if settings.DEBUG_MODE:
-        a = [{"path": f"http://91.107.176.230:86{route.path}/docs/"} for route in app.routes][4:-1]
+        a = [{"path": f"https://form.evolvezenith.com/{route.path}/docs/"} for route in app.routes][4:-1]
         return a
     return {
         "detail": "Not Found"
