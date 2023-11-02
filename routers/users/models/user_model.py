@@ -91,7 +91,7 @@ class Images:
         file_format = filetype.guess(doc).extension
         with self.safe_open_wb(f'static_files/user_avatars/{path}/{name}.{file_format}') as store_file:
             store_file.write(doc)
-        return f"http://65.108.246.44:85/gallery_files/user_avatars/{path}/{name}.{file_format}"
+        return f"http://http://91.107.176.230:86/gallery_files/user_avatars/{path}/{name}.{file_format}"
 
     def set_final_file(self, docs: list) -> list[str]:
         files = []
