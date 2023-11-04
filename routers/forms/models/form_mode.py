@@ -1,5 +1,4 @@
 from routers.database.mongo_connection import MongoConnection
-from routers.users.models.user_model import Images
 
 
 class FormActions:
@@ -49,9 +48,8 @@ class FormActions:
                 }]))}
 
     @staticmethod
-    def add_image_to_form(username, docs):
-        images = Images()
-        url = images.set_avatar_file(username, username, docs)
+    def add_image_to_form(referral_number, docs):
         with MongoConnection() as client:
-            client.users.update_one({"username": username}, {"$set": {"avatar": url}})
-            return {"message": "User registered successfully"}
+            client.forms.update_one({"referralNumber": int(referral_number)}, {"$set": {"docs": docs}})
+            return {
+                "message": f"Images successfully added to form, your referral number is {referral_number}, wait for our call, thanks"}

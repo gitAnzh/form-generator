@@ -1,8 +1,9 @@
+from typing import Union
+
 from fastapi import APIRouter
 from fastapi import Query
 from starlette import status
 from starlette.exceptions import HTTPException
-from typing import Union
 
 from routers.users.models.auth import AuthHandler
 from routers.users.models.user_model import *
@@ -53,17 +54,3 @@ def get_user(company_name: str):
 @user_router.get("/main_page", tags=["Main Page"])
 def main_page(searchByCompanyName: Union[str, None] = Query(default=None)):
     return UserActions.main_page_detail(searchByCompanyName)
-
-#
-# @user_router.post("/user_final", tags=["Users"])
-# def user_final(refferal_number: str, docs1: bytes = File(...), docs2: bytes = File(...), docs3: bytes = File(...),
-#                docs4: bytes = File(...), docs5: bytes = File(...), docs6: bytes = File(...)):
-#     image = Images()
-#     docs = [{"name": f'{refferal_number}-1', "path": refferal_number, "doc": docs1},
-#             {"name": f'{refferal_number}-2', "path": refferal_number, "doc": docs2},
-#             {"name": f'{refferal_number}-3', "path": refferal_number, "doc": docs3},
-#             {"name": f'{refferal_number}-4', "path": refferal_number, "doc": docs4},
-#             {"name": f'{refferal_number}-5', "path": refferal_number, "doc": docs5},
-#             {"name": f'{refferal_number}-6', "path": refferal_number, "doc": docs6}
-#             ]
-#     return image.set_final_file(docs)
