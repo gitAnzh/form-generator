@@ -1,4 +1,5 @@
 import os
+import re
 
 import filetype
 from fastapi import HTTPException
@@ -57,15 +58,22 @@ class UserActions:
             return {"message": "User registered successfully"}
 
     @staticmethod
-    def get_user(username):
+    def get_user(company_name):
         with MongoConnection() as client:
-            return client.users.find_one({"username": username}, {"_id": 0, "password": 0})
+            return client.users.find_one({"company_name": company_name}, {"_id": 0, "password": 0})
 
     @staticmethod
-    def main_page_detail():
+    def main_page_detail(searchByCompanyName):
         with MongoConnection() as client:
+            match = {}
+            if searchByCompanyName:
+                match = {"company_name": {
+                    '$regex': re.compile(rf"{searchByCompanyName}(?i)")
+                }}
             return list(client.users.aggregate([
                 {
+                    '$match': match
+                }, {
                     '$project': {
                         'company_name': 1,
                         'avatar': 1,
@@ -73,6 +81,7 @@ class UserActions:
                     }
                 }
             ]))
+
 
 class Images:
     @staticmethod

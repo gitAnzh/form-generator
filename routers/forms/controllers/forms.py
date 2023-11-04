@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from routers.forms.models.form_mode import FormActions
 from routers.forms.validators.forms_validator import FormsValidator
@@ -19,6 +19,9 @@ def confirm_form(referralNumber: int):
     return FormActions.confirm_form(referralNumber)
 
 
+
 @forms_router.get("/get_forms", tags=["Forms"])
-def confirm_form(companyId: int):
-    return FormActions.get_forms(companyId)
+def confirm_form(auth_header=Depends(auth_handler.check_current_user_tokens)):
+    user_data, header = auth_header
+    return FormActions.get_forms(user_data['staff_id'])
+

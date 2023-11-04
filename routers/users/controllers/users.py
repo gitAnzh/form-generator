@@ -1,5 +1,8 @@
 from fastapi import APIRouter
+from fastapi import Query
 from starlette import status
+from starlette.exceptions import HTTPException
+from typing import Union
 
 from routers.users.models.auth import AuthHandler
 from routers.users.models.user_model import *
@@ -28,7 +31,7 @@ def login(login_data: UserLogin):
     sub_dict = {
         "staff_id": user.get('id'),
         "username": user.get('username'),
-        "company_name": user.get('company_name')
+        "company_name": user.get('company_name'),
     }
     access_token = auth_handler.encode_access_token(sub_dict)
     refresh_token = auth_handler.encode_refresh_token(sub_dict)
@@ -43,13 +46,13 @@ def user_avatar(username: str, docs: bytes = File(...)):
 
 
 @user_router.get("/get_user_detail", tags=["Users"])
-def get_user(username: str):
-    return UserActions.get_user(username)
+def get_user(company_name: str):
+    return UserActions.get_user(company_name)
 
 
 @user_router.get("/main_page", tags=["Main Page"])
-def main_page():
-    return UserActions.main_page_detail()
+def main_page(searchByCompanyName: Union[str, None] = Query(default=None)):
+    return UserActions.main_page_detail(searchByCompanyName)
 
 #
 # @user_router.post("/user_final", tags=["Users"])
