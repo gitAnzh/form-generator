@@ -26,8 +26,8 @@ def confirm_form(auth_header=Depends(auth_handler.check_current_user_tokens)):
     return FormActions.get_forms(user_data['staff_id'])
 
 
-@forms_router.post("/user_final", tags=["Users"])
-def user_final(refferal_number: int, civilID: bytes = File(...), companyLetter: bytes = File(...),
+@forms_router.post("/upload_docs", tags=["Files"])
+def upload_docs(refferal_number: int, civilID: bytes = File(...), companyLetter: bytes = File(...),
                academicProof: bytes = File(...),
                paymentFee: bytes = File(...)):
     image = Images()
