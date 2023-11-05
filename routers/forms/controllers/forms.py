@@ -27,14 +27,27 @@ def confirm_form(auth_header=Depends(auth_handler.check_current_user_tokens)):
 
 
 @forms_router.post("/upload_docs", tags=["Files"])
-def upload_docs(refferal_number: int, civilID: bytes = File(...), companyLetter: bytes = File(...),
-               academicProof: bytes = File(...),
-               paymentFee: bytes = File(...)):
+def upload_docs(referral_number: int, civil_iD: bytes = File(..., alias="civilID"),
+                company_letter: bytes = File(..., alias="companyLetter"),
+                academic_proof: bytes = File(..., alias="academicProof"),
+                payment_fee: bytes = File(..., alias="paymentFee"),
+                scan_page1: bytes = File(..., alias="scanPage1"),
+                scan_page2: bytes = File(..., alias="scanPage2"),
+                scan_page3: bytes = File(..., alias="scanPage3"),
+                scan_page4: bytes = File(..., alias="scanPage4"),
+                scan_page5: bytes = File(..., alias="scanPage5"),
+                scan_page6: bytes = File(..., alias="scanPage6")):
     image = Images()
-    docs = [{"name": f'{refferal_number}-civil_iD', "path": refferal_number, "doc": civilID},
-            {"name": f'{refferal_number}-company_letter', "path": refferal_number, "doc": companyLetter},
-            {"name": f'{refferal_number}-academic_docs', "path": refferal_number, "doc": academicProof},
-            {"name": f'{refferal_number}-payment_fee', "path": refferal_number, "doc": paymentFee},
+    docs = [{"name": f'{referral_number}-civilID', "path": referral_number, "doc": civil_iD},
+            {"name": f'{referral_number}-companyLetter', "path": referral_number, "doc": company_letter},
+            {"name": f'{referral_number}-academicInfo', "path": referral_number, "doc": academic_proof},
+            {"name": f'{referral_number}-paymentFee', "path": referral_number, "doc": payment_fee},
+            {"name": f'{referral_number}-scanFile1', "path": referral_number, "doc": scan_page1},
+            {"name": f'{referral_number}-scanFile2', "path": referral_number, "doc": scan_page2},
+            {"name": f'{referral_number}-scanFile3', "path": referral_number, "doc": scan_page3},
+            {"name": f'{referral_number}-scanFile4', "path": referral_number, "doc": scan_page4},
+            {"name": f'{referral_number}-scanFile5', "path": referral_number, "doc": scan_page5},
+            {"name": f'{referral_number}-scanFile6', "path": referral_number, "doc": scan_page6},
             ]
     docs = image.set_doc_file(docs)
-    return FormActions.add_image_to_form(refferal_number, docs)
+    return FormActions.add_image_to_form(referral_number, docs)

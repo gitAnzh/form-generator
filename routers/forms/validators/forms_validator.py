@@ -207,6 +207,7 @@ class FormsValidator(BaseModel):
     )
     PersonalInformation: Optional[PersonalInformation]
     educationalInformation: Optional[EducationInformation]
+    experienceInformation: Optional[Experiences]
     RegistrationData: Optional[RegistrationData]
     OfficialUse: Optional[OfficialUse]
     special_servises: Optional[list] = Field(
