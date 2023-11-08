@@ -31,6 +31,6 @@ class Images:
                         f'static_files/final_files/{items["path"]}/{items["name"]}.{file_format}') as store_file:
                     store_file.write(items['doc'])
                     files.append(
-                        f"https://form.evolvezenith.com/gallery_files/user_avatars/{items['path']}/{items['name']}.{file_format}")
+                        f"https://form.evolvezenith.com/gallery_files/final_files/{items['path']}/{items['name']}.{file_format}")
 
         return files

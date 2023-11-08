@@ -64,7 +64,7 @@ class UserActions:
     @staticmethod
     def main_page_detail(searchByCompanyName):
         with MongoConnection() as client:
-            match = {}
+            match = {"status":True}
             if searchByCompanyName:
                 match = {"company_name": {
                     '$regex': re.compile(rf"{searchByCompanyName}(?i)")
