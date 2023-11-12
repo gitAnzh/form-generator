@@ -42,7 +42,8 @@ def login(login_data: UserLogin):
 @user_router.post("/user_avatar", tags=["Users"])
 async def user_avatar(username: str, docs: UploadFile = File(...)):
     docs_data = [{"name": username, "path": docs.content_type, "doc": await docs.read()}]
-    response = Images.upload_file(docs_data)
+    image_ins = Images()
+    response = image_ins.upload_file(docs_data)
     return UserActions.add_image_to_user(username, response[0])
 
 
