@@ -2,7 +2,6 @@ import base64
 
 from fastapi import APIRouter, Depends
 from fastapi import File, UploadFile
-from starlette.responses import HTMLResponse
 
 from routers.forms.models.form_mode import FormActions
 from routers.forms.validators.forms_validator import FormsValidator
@@ -72,8 +71,7 @@ async def get_file(filename: str):
         base64_data = base64.b64encode(image_data).decode("utf-8")
         # Construct the data URI
         data_uri = f"data:{response.headers['Content-Type']};base64,{base64_data}"
-        # Return the data URI as HTML
-        html_content = f'<img src="{data_uri}" alt="{filename}">'
-        return HTMLResponse(content=html_content, status_code=200)
+
+        return data_uri
     except Exception as e:
         return {"error": "something went wrong"}
