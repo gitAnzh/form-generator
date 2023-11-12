@@ -1,10 +1,12 @@
 from typing import Union
 
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile
 from fastapi import Query
 from starlette import status
 from starlette.exceptions import HTTPException
 
+from routers.public_models.images_model import Images
+from routers.public_models.main_page import main_page_detail
 from routers.users.models.auth import AuthHandler
 from routers.users.models.user_model import *
 from routers.users.validators.user_validator import *
@@ -42,8 +44,10 @@ def login(login_data: UserLogin):
 #
 # # Register user
 @user_router.post("/user_avatar", tags=["Users"])
-def user_avatar(username: str, docs: bytes = File(...)):
-    return UserActions.add_image_to_user(username, docs)
+async def user_avatar(username: str, docs: UploadFile = File(...)):
+    docs_data = [{"name": username, "path": docs.content_type, "doc": await docs.read()}]
+    response = Images.upload_file(docs_data)
+    return UserActions.add_image_to_user(username, response[0])
 
 
 @user_router.get("/get_user_detail", tags=["Users"])
@@ -52,5 +56,5 @@ def get_user(company_name: str):
 
 
 @user_router.get("/main_page", tags=["Main Page"])
-def main_page(searchByCompanyName: Union[str, None] = Query(default=None)):
-    return UserActions.main_page_detail(searchByCompanyName)
+def main_page(search: Union[str, None] = Query(default=None, alias="searchByCompanyName")):
+    return main_page_detail(search)

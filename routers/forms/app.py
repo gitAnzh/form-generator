@@ -2,7 +2,7 @@ from fastapi import FastAPI, responses
 from starlette.exceptions import HTTPException as starletteHTTPException
 
 from routers.config import settings
-from routers.forms.controllers.forms import forms_router
+from routers.controllers.forms import forms_router
 
 TAGS = [
     {

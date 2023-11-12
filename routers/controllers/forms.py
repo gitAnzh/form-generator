@@ -1,11 +1,9 @@
 import base64
-from io import BytesIO
 
 from fastapi import APIRouter, Depends
-from fastapi import File, UploadFile, HTTPException
+from fastapi import File, UploadFile
 from starlette.responses import HTMLResponse
 
-from routers.database.mongo_connection import MinIoConnection
 from routers.forms.models.form_mode import FormActions
 from routers.forms.validators.forms_validator import FormsValidator
 from routers.public_models.images_model import Images
@@ -43,7 +41,6 @@ async def upload_docs(referral_number: int, civil_iD: UploadFile = File(..., ali
                       scan_page4: UploadFile = File(..., alias="scanPage4"),
                       scan_page5: UploadFile = File(..., alias="scanPage5"),
                       scan_page6: UploadFile = File(..., alias="scanPage6")):
-    image = Images()
     docs = [{"name": f'{referral_number}-civilID', "path": civil_iD.content_type, "doc": await civil_iD.read()},
             {"name": f'{referral_number}-companyLetter', "path": civil_iD.content_type,
              "doc": await company_letter.read()},
@@ -58,15 +55,14 @@ async def upload_docs(referral_number: int, civil_iD: UploadFile = File(..., ali
             {"name": f'{referral_number}-scanFile5', "path": scan_page5.content_type, "doc": await scan_page5.read()},
             {"name": f'{referral_number}-scanFile6', "path": scan_page6.content_type, "doc": await scan_page6.read()}
             ]
-    docs = image.upload_file(docs, "docsgenerator")
+    docs = Images.upload_file(docs)
     return FormActions.add_image_to_form(referral_number, docs)
 
 
 @forms_router.get("/get/{filename}")
 async def get_file(filename: str):
     try:
-        image_ins = Images()
-        response = image_ins.get_file(filename, "docsgenerator")
+        response = Images.get_file(filename)
         # Read image data
         image_data = response.read()
         # Base64 encode the image data

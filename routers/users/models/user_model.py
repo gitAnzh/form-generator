@@ -1,10 +1,7 @@
-import re
-
 from fastapi import HTTPException
 from passlib.context import CryptContext
 
 from routers.database.mongo_connection import MongoConnection
-from routers.public_models.images_model import Images
 
 
 class UserActions:
@@ -49,35 +46,12 @@ class UserActions:
             raise HTTPException(status_code=500, detail={"error": "UserActions name exist! try different username"})
 
     @staticmethod
-    def add_image_to_user(username, docs):
-        images = Images()
-        url = images.set_avatar_file(username, username, docs)
-        with MongoConnection() as client:
-            client.users.update_one({"username": username}, {"$set": {"avatar": url}})
-            return {"message": "User registered successfully"}
-
-    @staticmethod
     def get_user(company_name):
         with MongoConnection() as client:
             return client.users.find_one({"company_name": company_name}, {"_id": 0, "password": 0})
 
     @staticmethod
-    def main_page_detail(searchByCompanyName):
+    def add_image_to_user(username, url):
         with MongoConnection() as client:
-            match = {"status":True}
-            if searchByCompanyName:
-                match = {"company_name": {
-                    '$regex': re.compile(rf"{searchByCompanyName}(?i)")
-                }}
-            return list(client.users.aggregate([
-                {
-                    '$match': match
-                }, {
-                    '$project': {
-                        'company_name': 1,
-                        'avatar': 1,
-                        '_id': 0
-                    }
-                }
-            ]))
-
+            client.users.update_one({"username": username}, {"$set": {"avatar": url}})
+            return {"message": "User registered successfully"}
