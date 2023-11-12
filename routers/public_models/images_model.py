@@ -1,6 +1,10 @@
 import os
+from io import BytesIO
 
 import filetype
+from fastapi import HTTPException
+
+from routers.database.mongo_connection import MinIoConnection
 
 
 class Images:
@@ -34,3 +38,30 @@ class Images:
                         f"https://form.evolvezenith.com/gallery_files/final_files/{items['path']}/{items['name']}.{file_format}")
 
         return files
+
+    def upload_file(self, files, bucket_name):
+        with MinIoConnection() as minio_client:
+            try:
+                file_names = []
+                for file in files:
+                    # Save the uploaded file to Minio
+                    data = file['doc']
+                    minio_client.client.put_object(
+                        bucket_name=bucket_name,
+                        object_name=file['name'],
+                        data=BytesIO(data),
+                        length=len(data),
+                        content_type=file['path']
+                    )
+                    file_names.append(f"https://form.evolvezenith.com/form/api/v1/get/{file['name']}")
+                return file_names
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Minio Error: {str(e)}")
+
+    def get_file(self, file_name, bucket_name):
+        with MinIoConnection() as minio_client:
+            response = minio_client.client.get_object(
+                bucket_name=bucket_name,
+                object_name=file_name
+            )
+            return response

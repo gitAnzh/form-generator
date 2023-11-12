@@ -1,8 +1,9 @@
+from minio import Minio
 from pymongo import MongoClient
 
 from routers.config import settings
 
-
+#
 # class MongoConnection:
 #     client = None
 #
@@ -20,7 +21,7 @@ from routers.config import settings
 #
 #     def __exit__(self, exc_type, exc_val, exc_tb):
 #         self.client.close()
-#
+
 
 class MongoConnection:
     client = None
@@ -39,3 +40,23 @@ class MongoConnection:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.client.close()
+
+
+class MinIoConnection:
+    minio_endpoint = "172.16.16.7:9000"
+    minio_access_key = "29Uc4eolcm2oHEDJiaG1"
+    minio_secret_key = "Dy7CmKFvMGZIQYRfaCwTgwCgFAsrnTNyKlXifJ4j"
+
+    def __init__(self):
+        self.client = Minio(
+            self.minio_endpoint,
+            access_key=self.minio_access_key,
+            secret_key=self.minio_secret_key,
+            secure=False,
+        )
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
