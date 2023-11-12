@@ -43,9 +43,9 @@ class MongoConnection:
 
 
 class MinIoConnection:
-    minio_endpoint = "172.16.16.7:9000"
-    minio_access_key = "29Uc4eolcm2oHEDJiaG1"
-    minio_secret_key = "Dy7CmKFvMGZIQYRfaCwTgwCgFAsrnTNyKlXifJ4j"
+    minio_endpoint = "91.107.176.230:9000"
+    minio_access_key = "zzyAWLk6AvHd2GiK5CjC"
+    minio_secret_key = "R4fMyjORMFFQJzgEMPM9XzugyYlMCZ8pJX4KvpiI"
 
     def __init__(self):
         self.client = Minio(
