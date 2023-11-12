@@ -1,24 +1,14 @@
 from routers.database.mongo_connection import MongoConnection
+from routers.public_models.counter import id_counter
 
 
 class FormActions:
     def __init__(self, form_data):
         self.data = form_data
 
-    @staticmethod
-    def id_counter(request_type):
-        with MongoConnection() as client:
-            id = client.id.find_one({"type": request_type})
-            if id:
-                client.id.update_one({"type": request_type}, {"$inc": {"counter": 1}})
-                return id.get("counter")
-            else:
-                client.id.insert_one({"type": request_type, "counter": 1})
-                return 1
-
     def create_form(self):
         with MongoConnection() as client:
-            self.data['referralNumber'] = self.id_counter("forms")
+            self.data['referralNumber'] = id_counter("forms")
             self.data['confirmed'] = False
             client.forms.insert_one(self.data)
             return {"success": True, "message": "Form registered successfully",
@@ -33,19 +23,27 @@ class FormActions:
             return {"success": True, "message": "something went wrong!"}
 
     @staticmethod
-    def get_forms(company_id):
+    def get_forms(company_id, page, per_page):
         with MongoConnection() as client:
-            return {"success": True, "message": list(client.forms.aggregate(
+            page = page
+            per = per_page
+            skip = per * (page - 1)
+            limit = per
+            match = {'companyID': int(company_id)} if company_id is not None else {}
+
+            data = list(client.forms.aggregate(
                 [
                     {
-                        '$match': {
-                            'companyID': int(company_id)
-                        }
-                    }, {
+                        '$match': match}, {
                     '$project': {
                         '_id': 0
                     }
-                }]))}
+                },
+                    {"$skip": skip},
+                    {"$limit": limit}
+                ]))
+            count = client.forms.count_documents(match)
+            return {"success": True, "message": data, "count": count}
 
     @staticmethod
     def add_image_to_form(referral_number, docs):
@@ -53,3 +51,4 @@ class FormActions:
             client.forms.update_one({"referralNumber": int(referral_number)}, {"$set": {"docs": docs}})
             return {
                 "message": f"Images successfully added to form, your referral number is {referral_number}, wait for our call, thanks"}
+

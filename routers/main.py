@@ -1,12 +1,12 @@
-from typing import Union
-
 import uvicorn
+from config import settings
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
-from config import settings
+from routers.forms.app import app as form_app
+from routers.main_page.app import app as main_app
 from routers.users.app import appd as user_app
-from routers.forms.app import app as form_data
+
 #
 app = FastAPI(title="Portal Api Gateway",
               version="0.0.1",
@@ -17,7 +17,8 @@ app = FastAPI(title="Portal Api Gateway",
 
 
 app.mount(path="/users/api/v1", app=user_app)
-app.mount(path="/form/api/v1", app=form_data)
+app.mount(path="/form/api/v1", app=form_app)
+app.mount(path="/main_page/api/v1", app=main_app)
 app.mount("/gallery_files/", StaticFiles(directory="static_files"), name="gallery_files")
 
 

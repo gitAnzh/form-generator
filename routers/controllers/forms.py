@@ -25,9 +25,12 @@ def confirm_form(referralNumber: int):
 
 
 @forms_router.get("/get_forms", tags=["Forms"])
-def get_forms(auth_header=Depends(auth_handler.check_current_user_tokens)):
+def get_forms(page: int, perPage: int, auth_header=Depends(auth_handler.check_current_user_tokens)):
     user_data, header = auth_header
-    return FormActions.get_forms(user_data['staff_id'])
+    company_id = user_data['staff_id']
+    if user_data['username'] == "admin":
+        company_id = None
+    return FormActions.get_forms(company_id, page, perPage)
 
 
 @forms_router.post("/upload_docs", tags=["Files"])
