@@ -57,7 +57,8 @@ async def upload_docs(referral_number: int, civil_iD: UploadFile = File(..., ali
             {"name": f'{referral_number}-scanFile5', "path": scan_page5.content_type, "doc": await scan_page5.read()},
             {"name": f'{referral_number}-scanFile6', "path": scan_page6.content_type, "doc": await scan_page6.read()}
             ]
-    docs = Images.upload_file(docs)
+    image_ins = Images()
+    docs = image_ins.upload_file(docs)
     return FormActions.add_image_to_form(referral_number, docs)
 
 
