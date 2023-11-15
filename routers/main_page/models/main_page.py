@@ -1,10 +1,10 @@
 import re
 
-from routers.database.mongo_connection import MongoConnection
+from routers.database.mongo_connection import mongo_client
 
 
 def main_page_detail(search_by_companyName):
-    with MongoConnection() as client:
+    with mongo_client() as client:
         match = {"status": True}
         if search_by_companyName:
             match = {"company_name": {

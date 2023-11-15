@@ -1,8 +1,8 @@
-from routers.database.mongo_connection import MongoConnection
+from routers.database.mongo_connection import mongo_client
 
 
 def id_counter(request_type):
-    with MongoConnection() as client:
+    with mongo_client() as client:
         id_count = client.id.find_one({"type": request_type})
         if id_count:
             client.id.update_one({"type": request_type}, {"$inc": {"counter": 1}})

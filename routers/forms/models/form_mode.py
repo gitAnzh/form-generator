@@ -1,73 +1,54 @@
-from routers.database.mongo_connection import MongoConnection
-from routers.public_models.counter import id_counter
+from routers.database.mongo_connection import mongo_client
 
 
 class FormActions:
-    def __init__(self, form_data):
-        self.data = form_data
+    def __init__(self, referral_number):
+        self.referral_number = referral_number
 
-    def create_form(self):
-        with MongoConnection() as client:
-            self.data['referralNumber'] = id_counter("forms")
-            self.data['confirmed'] = False
-            client.forms.insert_one(self.data)
-            return {"success": True, "message": "Form registered successfully",
-                    "referralNumber": self.data['referralNumber']}
+    def create_form(self, data: dict):
+        with mongo_client() as client:
+            data.update({"referralNumber": self.referral_number, "confirmed": False})
+            client.forms.insert_one(data)
+            return {"success": True, "referralNumber": self.referral_number}
 
-    @staticmethod
-    def confirm_form(referral):
-        with MongoConnection() as client:
-            form = client.forms.update_one({"referralNumber": referral}, {"$set": {"confirmed": True}})
+    def confirm_form(self):
+        with mongo_client() as client:
+            form = client.forms.update_one({"referralNumber": self.referral_number}, {"$set": {"confirmed": True}})
             if form.modified_count:
-                return {"success": True, "message": "Form confirmed successfully"}
-            return {"success": True, "message": "something went wrong!"}
+                return {"success": True}
+            return {"success": False}
 
     @staticmethod
     def get_forms(company_id, page, per_page):
-        with MongoConnection() as client:
+        with mongo_client() as client:
             page = page
             per = per_page
             skip = per * (page - 1)
             limit = per
             match = {'companyID': int(company_id)} if company_id is not None else {}
 
-            data = list(client.forms.aggregate(
-                [
-                    {
-                        '$match': match}, {
-                    '$project': {
-                        '_id': 0,
-                        'docs': 0
-                    }
-                },
-                    {"$skip": skip},
-                    {"$limit": limit}
-                ]))
+            data = list(
+                client.forms.aggregate(
+                    [
+                        {
+                            '$match': match
+                        },
+                        {
+                            '$project': {
+                                '_id': 0,
+                            }
+                        },
+                        {"$skip": skip},
+                        {"$limit": limit}
+                    ]
+                )
+            )
             count = client.forms.count_documents(match)
-            return {"success": True, "message": data, "count": count}
+            return {"success": True, "count": count, "message": data}
 
-    @staticmethod
-    def get_docs(referral_number):
-        with MongoConnection() as client:
-            data = list(client.forms.aggregate(
-                [
-                    {
-                        '$match': {"referralNumber": referral_number}}, {
-                    '$project': {
-                        '_id': 0,
-                        'docs': 1
-                    }
-                }
-                ]))
-            return {"success": True, "message": data}
-
-    @staticmethod
-    def add_image_to_form(referral_number, docs):
-        with MongoConnection() as client:
-            client.forms.update_one({"referralNumber": int(referral_number)}, {"$set": {"docs": docs}})
-            return {
-                "message": f"Images successfully added to form, your referral number is {referral_number}, wait for our call, thanks"}
-
-
-def filename_creator(referral_number, filename, string_name):
-    return f'{referral_number}-{string_name}.{filename.filename.split(".")[-1]}'
+    def add_image_to_form(self, doc_name):
+        with mongo_client() as client:
+            result = client.forms.update_one({"referralNumber": int(self.referral_number)}, {"$set": {"docs": doc_name}})
+            if result.modified_count:
+                return {"success": True}
+            return {"success": False}

@@ -1,21 +1,24 @@
 from enum import Enum
 from typing import Optional
 
-from fastapi import UploadFile, File
 from pydantic import BaseModel, Field
 
 
-class BaseValidator(BaseModel):
-    pass
+class ReferralNumber(BaseModel):
+    referral_number: int = Field(
+        alias="referralNumber",
+        dataType="int",
+        isRquired=True
+    )
 
 
-class contract_type(str, Enum):
+class ContractType(str, Enum):
     new = "new"
     renew = "renew"
     update = "update"
 
 
-class contract_duration(str, Enum):
+class ContractDuration(str, Enum):
     month_3 = "3 month"
     month_6 = "6 month"
     month_9 = "9 month"
@@ -23,7 +26,7 @@ class contract_duration(str, Enum):
 
 
 class PersonalInformation(BaseModel):
-    sortType: Optional[contract_type] = Field(
+    sortType: Optional[ContractType] = Field(
         title="Contract Type",
         alias="contractType",
         description="contract condition",
@@ -126,7 +129,7 @@ class Experiences(BaseModel):
 
 
 class RegistrationData(BaseModel):
-    registration_period: Optional[contract_duration] = Field(
+    registration_period: Optional[ContractDuration] = Field(
         title="registration period",
         alias="registration_period",
         description="contract duration of user",
@@ -218,4 +221,3 @@ class FormsValidator(BaseModel):
         dataType="dict",
         isRquired=True,
     )
-
