@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Optional
 
+from fastapi import UploadFile, File
 from pydantic import BaseModel, Field
 
 
@@ -217,3 +218,4 @@ class FormsValidator(BaseModel):
         dataType="dict",
         isRquired=True,
     )
+

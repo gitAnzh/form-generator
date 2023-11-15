@@ -36,7 +36,8 @@ class FormActions:
                     {
                         '$match': match}, {
                     '$project': {
-                        '_id': 0
+                        '_id': 0,
+                        'docs': 0
                     }
                 },
                     {"$skip": skip},
@@ -46,9 +47,27 @@ class FormActions:
             return {"success": True, "message": data, "count": count}
 
     @staticmethod
+    def get_docs(referral_number):
+        with MongoConnection() as client:
+            data = list(client.forms.aggregate(
+                [
+                    {
+                        '$match': {"referralNumber": referral_number}}, {
+                    '$project': {
+                        '_id': 0,
+                        'docs': 1
+                    }
+                }
+                ]))
+            return {"success": True, "message": data}
+
+    @staticmethod
     def add_image_to_form(referral_number, docs):
         with MongoConnection() as client:
             client.forms.update_one({"referralNumber": int(referral_number)}, {"$set": {"docs": docs}})
             return {
                 "message": f"Images successfully added to form, your referral number is {referral_number}, wait for our call, thanks"}
 
+
+def filename_creator(referral_number, filename, string_name):
+    return f'{referral_number}-{string_name}.{filename.filename.split(".")[-1]}'

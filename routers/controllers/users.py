@@ -1,8 +1,8 @@
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, Response
 from starlette import status
 from starlette.exceptions import HTTPException
 
-from routers.public_models.images_model import Images
+from routers.database.mongo_connection import minio_client
 from routers.users.models.auth import AuthHandler
 from routers.users.models.user_model import *
 from routers.users.validators.user_validator import *
@@ -31,20 +31,22 @@ def login(login_data: UserLogin):
         "staff_id": user.get('id'),
         "username": user.get('username'),
         "company_name": user.get('company_name'),
+        "is_admin": user.get("is_admin")
     }
     access_token = auth_handler.encode_access_token(sub_dict)
     refresh_token = auth_handler.encode_refresh_token(sub_dict)
     return {"access_token": access_token, "refresh_token": refresh_token, "message": "login successfully"}
 
 
-#
-# # Register user
+# Add user avatar
 @user_router.post("/user_avatar", tags=["Users"])
-async def user_avatar(username: str, docs: UploadFile = File(...)):
-    docs_data = [{"name": username, "path": docs.content_type, "doc": await docs.read()}]
-    image_ins = Images()
-    response = image_ins.upload_file(docs_data)
-    return UserActions.add_image_to_user(username, response[0])
+def user_avatar(fastapi_response: Response, username: str, docs: UploadFile = File(...)):
+    filename = f"{username}.{docs.filename.split('.')[-1]}"
+    response, result = minio_client.upload_file(file_name=filename, file_path=docs.file.fileno())
+    if not result:
+        raise HTTPException(status_code=400, detail={"error": response or "something went wrong"})
+    fastapi_response.status_code = 200
+    return UserActions.add_image_to_user(username, filename)
 
 
 @user_router.get("/get_user_detail", tags=["Users"])
@@ -57,7 +59,6 @@ def get_users(page: int, perPage: int):
     return UserActions.get_users(None, page, perPage)
 
 
-#
 # # Register user
 @user_router.post("/confirm_user", tags=["Users"])
 def confirm_user(username: str):

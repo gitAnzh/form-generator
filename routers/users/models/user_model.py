@@ -30,6 +30,7 @@ class UserActions:
                 user['id'] = id_counter("user")
                 user['password'] = hashed_password
                 user['status'] = False
+                user['is_admin'] = False
                 users_collection.users.insert_one(user)
                 return {"message": "User registered successfully"}
         else:
@@ -62,9 +63,9 @@ class UserActions:
                 ])), "count": client.users.count_documents({"username": {"$ne": None}})}
 
     @staticmethod
-    def add_image_to_user(username, url):
+    def add_image_to_user(username, avatar_name):
         with MongoConnection() as client:
-            client.users.update_one({"username": username}, {"$set": {"avatar": url}})
+            client.users.update_one({"username": username}, {"$set": {"avatar": avatar_name}})
             return {"message": "User registered successfully"}
 
     def confirm_user(self):

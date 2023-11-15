@@ -1,11 +1,11 @@
-import base64
+import datetime
 
-from fastapi import APIRouter, Depends
-from fastapi import File, UploadFile
+from fastapi import APIRouter, Depends, Response
+from fastapi import File, UploadFile, HTTPException
 
-from routers.forms.models.form_mode import FormActions
+from routers.database.mongo_connection import minio_client
+from routers.forms.models.form_mode import FormActions, filename_creator
 from routers.forms.validators.forms_validator import FormsValidator
-from routers.public_models.images_model import Images
 from routers.users.models.auth import AuthHandler
 
 forms_router = APIRouter()
@@ -33,7 +33,8 @@ def get_forms(page: int, perPage: int, auth_header=Depends(auth_handler.check_cu
 
 
 @forms_router.post("/upload_docs", tags=["Files"])
-async def upload_docs(referral_number: int, civil_iD: UploadFile = File(..., alias="civilID"),
+async def upload_docs(referral_number: int,
+                      civil_ID: UploadFile = File(..., alias="civilID"),
                       company_letter: UploadFile = File(..., alias="companyLetter"),
                       academic_proof: UploadFile = File(..., alias="academicProof"),
                       payment_fee: UploadFile = File(..., alias="paymentFee"),
@@ -42,37 +43,38 @@ async def upload_docs(referral_number: int, civil_iD: UploadFile = File(..., ali
                       scan_page3: UploadFile = File(..., alias="scanPage3"),
                       scan_page4: UploadFile = File(..., alias="scanPage4"),
                       scan_page5: UploadFile = File(..., alias="scanPage5"),
-                      scan_page6: UploadFile = File(..., alias="scanPage6")):
-    docs = [{"name": f'{referral_number}-civilID', "path": civil_iD.content_type, "doc": await civil_iD.read()},
-            {"name": f'{referral_number}-companyLetter', "path": civil_iD.content_type,
-             "doc": await company_letter.read()},
-            {"name": f'{referral_number}-academicInfo', "path": academic_proof.content_type,
-             "doc": await academic_proof.read()},
-            {"name": f'{referral_number}-paymentFee', "path": payment_fee.content_type,
-             "doc": await payment_fee.read()},
-            {"name": f'{referral_number}-scanFile1', "path": scan_page1.content_type, "doc": await scan_page1.read()},
-            {"name": f'{referral_number}-scanFile2', "path": scan_page2.content_type, "doc": await scan_page2.read()},
-            {"name": f'{referral_number}-scanFile3', "path": scan_page3.content_type, "doc": await scan_page3.read()},
-            {"name": f'{referral_number}-scanFile4', "path": scan_page4.content_type, "doc": await scan_page4.read()},
-            {"name": f'{referral_number}-scanFile5', "path": scan_page5.content_type, "doc": await scan_page5.read()},
-            {"name": f'{referral_number}-scanFile6', "path": scan_page6.content_type, "doc": await scan_page6.read()}
-            ]
-    image_ins = Images()
-    docs = image_ins.upload_file(docs)
-    return FormActions.add_image_to_form(referral_number, docs)
+                      scan_page6: UploadFile = File(..., alias="scanPage6"),
+                      ):
+    start = datetime.datetime.now()
+    docs_dict = {
+        "civil_iD": civil_ID,
+        "company_letter": company_letter,
+        "academic_proof": academic_proof,
+        "payment_fee": payment_fee,
+        "scan_page1": scan_page1,
+        "scan_page2": scan_page2,
+        "scan_page3": scan_page3,
+        "scan_page4": scan_page4,
+        "scan_page5": scan_page5,
+        "scan_page6": scan_page6,
+    }
+    names = []
+    minio_errors = []
+    for name, doc in docs_dict.items():
+        filename = filename_creator(referral_number, doc, name)
+        minio_response, result = minio_client.upload_file(file_name=filename, file_path=doc.file.fileno())
+        if result is None:
+            minio_errors.append(minio_response)
+        names.append(filename)
+    if len(minio_errors):
+        raise HTTPException(status_code=400)
+    return FormActions.add_image_to_form(referral_number, names)
 
 
-@forms_router.get("/get/{filename}")
+@forms_router.get("/get/{filename}", tags=["Get Files"])
 async def get_file(filename: str):
     try:
-        response = Images.get_file(filename)
-        # Read image data
-        image_data = response.read()
-        # Base64 encode the image data
-        base64_data = base64.b64encode(image_data).decode("utf-8")
-        # Construct the data URI
-        data_uri = f"data:{response.headers['Content-Type']};base64,{base64_data}"
-
-        return data_uri
+        response = minio_client.download_file(filename)
+        return Response(content=response.read(), media_type=f"image/{filename.split('.')[-1]}")
     except Exception as e:
         return {"error": "something went wrong"}

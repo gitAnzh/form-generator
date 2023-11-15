@@ -1,7 +1,9 @@
+import minio.error
 from minio import Minio
 from pymongo import MongoClient
 
 from routers.config import settings
+
 
 #
 # class MongoConnection:
@@ -21,8 +23,10 @@ from routers.config import settings
 #
 #     def __exit__(self, exc_type, exc_val, exc_tb):
 #         self.client.close()
-#
-#
+
+
+
+
 class MongoConnection:
     client = None
 
@@ -47,6 +51,7 @@ class MinIoConnection:
     minio_access_key = "zzyAWLk6AvHd2GiK5CjC"
     minio_secret_key = "R4fMyjORMFFQJzgEMPM9XzugyYlMCZ8pJX4KvpiI"
     minio_bucket_name = "docsgenerator"
+
     def __init__(self):
         self.minio_connection = Minio(
             self.minio_endpoint,
@@ -55,8 +60,21 @@ class MinIoConnection:
             secure=False,
         )
 
-    def __enter__(self):
-        return self
+    def upload_file(self, file_name, file_path):
+        try:
+            response = self.minio_connection.fput_object(
+                self.minio_bucket_name, object_name=file_name, file_path=file_path
+            )
+            return response, True
+        except minio.error as err:
+            return str(err), None
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+    def download_file(self, object_name):
+        try:
+            response = self.minio_connection.get_object(self.minio_bucket_name, object_name=object_name)
+            return response
+        except minio.error as err:
+            return f"File download failed: {err}"
+
+
+minio_client = MinIoConnection()
