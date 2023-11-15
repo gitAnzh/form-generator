@@ -42,8 +42,8 @@ class UserActions:
             if company_name is not None:
                 data = client.users.find_one({"company_name": company_name}, {"_id": 0, "password": 0})
                 if data:
-                    return data
-                return {"message": "Company not found"}
+                    return data, True
+                return {"message": "Company not found"}, False
             else:
                 page = page
                 per = per_page
@@ -60,7 +60,7 @@ class UserActions:
                     },
                     {"$skip": skip},
                     {"$limit": limit}
-                ])), "count": client.users.count_documents({"username": {"$ne": None}})}
+                ])), "count": client.users.count_documents({"username": {"$ne": None}})}, True
 
     @staticmethod
     def add_image_to_user(username, avatar_name):

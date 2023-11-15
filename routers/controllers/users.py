@@ -50,13 +50,21 @@ def user_avatar(fastapi_response: Response, username: str, docs: UploadFile = Fi
 
 
 @user_router.get("/get_user_detail", tags=["Users"])
-def get_user(company_name: str):
-    return UserActions.get_users(company_name, 1, 15)
+def get_user(response: Response, company_name: str):
+    data, result = UserActions.get_users(company_name, 1, 15)
+    if not result:
+        raise HTTPException(status_code=404, detail={"error": "no user found"})
+    response.status_code = 200
+    return data
 
 
 @user_router.get("/get_users", tags=["Users"])
-def get_users(page: int, perPage: int):
-    return UserActions.get_users(None, page, perPage)
+def get_users(response: Response, page: int, perPage: int):
+    data, result = UserActions.get_users(None, page, perPage)
+    if not result:
+        raise HTTPException(status_code=404, detail={"error": "no data found"})
+    response.status_code = 200
+    return data
 
 
 # # Register user
