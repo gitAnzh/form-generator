@@ -52,7 +52,7 @@ def get_forms(
 
 
 @forms_router.post("/upload_docs", tags=["Files"])
-def upload_docs(
+async def upload_docs(
         response: Response,
         referral_number: int,
         civil_id: UploadFile = File(..., alias="civilID"),
@@ -82,7 +82,8 @@ def upload_docs(
     minio_errors = []
     for name, doc in docs_dict.items():
         filename = filename_creator(referral_number, doc, name)
-        minio_response, result = minio_client.upload_file(file_name=filename, file_path=doc.file.fileno())
+        minio_response, result = minio_client.upload_file(file_name=filename, content_type=doc.content_type,
+                                                          doc=await doc.read())
         if result is None:
             minio_errors.append(minio_response)
         doc_name.append(filename)

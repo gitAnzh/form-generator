@@ -43,9 +43,10 @@ def login(login_data: UserLogin):
 
 # Add user avatar
 @user_router.post("/user_avatar", tags=["Users"])
-def user_avatar(fastapi_response: Response, username: str, docs: UploadFile = File(...)):
+async def user_avatar(fastapi_response: Response, username: str, docs: UploadFile = File(...)):
     filename = f"{username}.{docs.filename.split('.')[-1]}"
-    response, result = minio_client.upload_file(file_name=filename, file_path=docs.file.fileno())
+    response, result = minio_client.upload_file(file_name=filename, content_type=docs.content_type,
+                                                doc=await docs.read())
     if not result:
         raise HTTPException(status_code=400, detail={"error": response or "something went wrong"})
     fastapi_response.status_code = 200

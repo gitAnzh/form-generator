@@ -1,4 +1,5 @@
-import minio.error
+from io import BytesIO
+
 from minio import Minio
 
 
@@ -15,11 +16,16 @@ class MinIoConnection:
                                       secure=False
                                       )
 
-    def upload_file(self, file_name, file_path):
+    def upload_file(self, file_name, doc, content_type):
         try:
-            response = self.minio_connection.fput_object(
-                self.minio_bucket_name, object_name=file_name, file_path=file_path
+            response = self.minio_connection.put_object(
+                bucket_name=self.minio_bucket_name,
+                object_name=file_name,
+                data=BytesIO(doc),
+                length=len(doc),
+                content_type=content_type
             )
+
             return response, True
         except Exception as err:
             return str(err), None
