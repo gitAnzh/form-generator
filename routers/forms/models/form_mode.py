@@ -1,37 +1,54 @@
-import os
-
-import filetype
-from fastapi import HTTPException
-from passlib.context import CryptContext
-
-from routers.database.mongo_connection import MongoConnection
-from routers.users.models.user_model import Images
+from routers.database.mongo_connection import mongo_client
 
 
 class FormActions:
-    def __init__(self, form_data):
-        self.data = form_data
+    def __init__(self, referral_number):
+        self.referral_number = referral_number
+
+    def create_form(self, data: dict):
+        with mongo_client() as client:
+            data.update({"referralNumber": self.referral_number, "confirmed": False})
+            client.forms.insert_one(data)
+            return {"success": True, "referralNumber": self.referral_number}
+
+    def confirm_form(self):
+        with mongo_client() as client:
+            form = client.forms.update_one({"referralNumber": self.referral_number}, {"$set": {"confirmed": True}})
+            if form.modified_count:
+                return {"success": True}
+            return {"success": False}
 
     @staticmethod
-    def id_counter(request_type):
-        with MongoConnection() as client:
-            id = client.id.find_one({"type": request_type})
-            if id:
-                client.id.update_one({"type": request_type}, {"$inc": {"counter": 1}})
-                return id.get("counter")
-            else:
-                client.id.insert_one({"type": request_type, "counter": 1})
-                return 1
+    def get_forms(company_id, page, per_page):
+        with mongo_client() as client:
+            page = page
+            per = per_page
+            skip = per * (page - 1)
+            limit = per
+            match = {'companyID': int(company_id)} if company_id is not None else {}
 
-    def create_form(self):
-        with MongoConnection() as users_collection:
-                a = 1
+            data = list(
+                client.forms.aggregate(
+                    [
+                        {
+                            '$match': match
+                        },
+                        {
+                            '$project': {
+                                '_id': 0,
+                            }
+                        },
+                        {"$skip": skip},
+                        {"$limit": limit}
+                    ]
+                )
+            )
+            count = client.forms.count_documents(match)
+            return {"success": True, "count": count, "message": data}
 
-    @staticmethod
-    def add_image_to_form(username, docs):
-        images = Images()
-        url = images.set_avatar_file(username, username, docs)
-        with MongoConnection() as client:
-            client.users.update_one({"username": username}, {"$set": {"avatar": url}})
-            return {"message": "User registered successfully"}
-
+    def add_image_to_form(self, doc_name):
+        with mongo_client() as client:
+            result = client.forms.update_one({"referralNumber": int(self.referral_number)}, {"$set": {"docs": doc_name}})
+            if result.modified_count:
+                return {"success": True}
+            return {"success": False}

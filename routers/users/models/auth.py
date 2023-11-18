@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import exceptions as jwt_exceptions
 from passlib.context import CryptContext
 
-from routers.database.mongo_connection import MongoConnection
+from routers.database.mongo_connection import mongo_client
 
 
 class AuthHandler:
@@ -22,7 +22,7 @@ class AuthHandler:
         return self.pwd_context.verify(plain_password, hashed_password)
 
     def authenticate_user(self, username: str, password: str):
-        with MongoConnection() as users_collection:
+        with mongo_client() as users_collection:
             user = users_collection.users.find_one({"username": username})
             if user and AuthHandler.verify_password(self, password, user["password"]):
                 return user

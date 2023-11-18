@@ -2,19 +2,18 @@ from fastapi import FastAPI, responses
 from starlette.exceptions import HTTPException as starletteHTTPException
 
 from routers.config import settings
-
-from routers.users.controllers.users import user_router
+from routers.controllers.main_page import main_router
 
 TAGS = [
     {
-        "name": "Form Generator",
-        "description": "FormGenerator CRUD"
+        "name": "FormGenerator",
+        "description": "form generator CRUD"
     }
 ]
 
-appd = FastAPI(
+app = FastAPI(
     title="Form Generator API",
-    description="This is users gateway",
+    description="This is form generator service",
     version="0.1.0",
     openapi_tags=TAGS,
     docs_url="/docs/" if settings.DEBUG_MODE else None,
@@ -22,11 +21,10 @@ appd = FastAPI(
     debug=settings.DEBUG_MODE
 )
 
-
-appd.include_router(user_router)
+app.include_router(main_router)
 
 
 # customize exception handler of fast api
-@appd.exception_handler(starletteHTTPException)
+@app.exception_handler(starletteHTTPException)
 def validation_exception_handler(request, exc):
     return responses.JSONResponse(exc.detail, status_code=exc.status_code)
