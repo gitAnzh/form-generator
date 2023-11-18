@@ -1,7 +1,7 @@
-import os
 
-from dotenv import load_dotenv
 from pydantic import BaseSettings
+import os
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     MINIO_SECRET_KEY: str = os.getenv("MINIO_SECRET_KEY")
     MINIO_BUCKET_NAME: str = os.getenv("MINIO_BUCKET_NAME")
 
+
     # Uvicorn
     UVICORN_HOST: str = os.getenv("UVICORN_HOST")
     UVICORN_PORT: int = int(os.getenv("UVICORN_PORT"))
@@ -33,6 +34,5 @@ class Settings(BaseSettings):
     SECRET_KEY: str = os.getenv("SECRET_KEY")
 
     MONGO_CLIENT: str = os.getenv("MONGO_CLIENT") or "server"
-
 
 settings = Settings()
